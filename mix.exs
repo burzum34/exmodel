@@ -7,6 +7,7 @@ defmodule Exmodel.Mixfile do
      elixir: "~> 1.4",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
+     preferred_cli_env: [espec: :test],
      deps: deps()]
   end
 
@@ -28,6 +29,11 @@ defmodule Exmodel.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [
+      {:espec,
+        "1.3.2",
+        git: "https://github.com/antonmi/espec",
+        only: :test}
+    ]
   end
 end
