@@ -34,6 +34,9 @@ defmodule ExModel do
       def put(object, key, value), do:
         Implementation.put(object, key, value, @declaration)
 
+      def put_all(object, enumerable), do:
+        Implementation.put_all(object, enumerable, @declaration)
+
       def get(object, key), do: Implementation.get(object, key, @declaration)
 
       def get(object, key, default), do:

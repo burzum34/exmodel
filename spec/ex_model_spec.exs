@@ -59,6 +59,28 @@ defmodule ExModel.Spec do
     end
   end
 
+  describe "put_all/2" do
+    subject do: Subject.put_all(Subject.new, attributes())
+
+    context "when the given attributes are declared" do
+      let :attributes, do: [foo: "foo", bar: "bar"]
+
+      it "assigns the attributes" do
+        expect(Subject.get(subject(), :foo)).to eq "foo"
+        expect(Subject.get(subject(), :bar)).to eq "bar"
+      end
+    end
+
+    context "when a given attribute has not been declared" do
+      let :attributes, do: [foo: "foo", bar: "bar", frozz: "frozz"]
+
+      it "raises an exception" do
+        expect(fn -> subject() |> IO.inspect end).to(
+          raise_exception(RuntimeError))
+      end
+    end
+  end
+
   describe "get/2" do
     subject do: Subject.new()
       |> Subject.put(:foo, value())

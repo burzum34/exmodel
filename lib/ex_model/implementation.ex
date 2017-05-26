@@ -28,6 +28,13 @@ defmodule ExModel.Implementation do
     assign_attribute(object, {key, value}, declaration)
 
   @doc """
+  Given a model object, a keyword list or map, and a declaration, this function
+  returns a new model object with the corresponding attributes assigned.
+  """
+  def put_all(object, attributes, declaration), do:
+    Enum.reduce(attributes, object, &(assign_attribute &2, &1, declaration))
+
+  @doc """
   Given a model object, a key, and a declaration, this function returns the
   model object's corresponding attribute value, or nil if not found.
   """
