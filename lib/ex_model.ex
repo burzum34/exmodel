@@ -48,6 +48,12 @@ defmodule ExModel do
 
       def get(object, key, default), do:
         Implementation.get(object, key, default, @declaration)
+
+      def changed?(object), do: Implementation.changed?(object)
+
+      def changeset(object), do: Implementation.changeset(object)
+
+      def clear_changes(object), do: Implementation.clear_changes(object)
   	end
   end
 end

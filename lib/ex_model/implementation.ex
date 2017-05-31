@@ -54,6 +54,25 @@ defmodule ExModel.Implementation do
     Map.get(object.attributes, key, default)
   end
 
+  @doc """
+  Returns true if the given object has any unsaved changes.
+  """
+  def changed?(object), do: !(object |> changeset |> Enum.empty?)
+
+  @doc """
+  Returns the given object's unsaved changes as a map.
+  """
+  def changeset(object), do: object.attributes
+    |> Enum.filter(fn {k, v} -> old = object.old_attributes[k]; v != old end)
+    |> Enum.into(Map.new)
+
+  @doc """
+  Given an object, this function returns a new object where all attributes are
+  considered unchanged.
+  """
+  def clear_changes(object), do:
+    Map.put(object, :old_attributes, object.attributes)
+
   #
   # Private
   #
