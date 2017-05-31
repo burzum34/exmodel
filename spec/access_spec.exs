@@ -1,4 +1,4 @@
-defmodule ExModel.Spec do
+defmodule ExModel.AccessSpec do
   @moduledoc false
   use ESpec
 

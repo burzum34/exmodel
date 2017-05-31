@@ -17,7 +17,10 @@ defmodule ExModel.Implementation do
   """
   def new(attributes, declaration) do
     acc = struct(declaration.module, [])
-    Enum.reduce(attributes, acc, &(assign_attribute &2, &1, declaration))
+    attributes = Enum.into(attributes, %{})
+    declaration.default_values
+      |> Map.merge(attributes)
+      |> Enum.reduce(acc, &(assign_attribute &2, &1, declaration))
   end
 
   @doc """

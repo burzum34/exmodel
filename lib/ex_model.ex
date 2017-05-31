@@ -19,6 +19,13 @@ defmodule ExModel do
     end
   end
 
+  defmacro attribute(name, options) do
+    quote do
+      @declaration Declaration.add_field(
+        @declaration, unquote(name), unquote(options))
+    end
+  end
+
   defmacro __before_compile__(_env) do
   	quote do
       defstruct(

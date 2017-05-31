@@ -4,7 +4,8 @@ defmodule ExModel.Declaration do
 
   defstruct(
     module: nil,
-    field_names: MapSet.new
+    field_names: MapSet.new,
+    default_values: Map.new
   )
 
   @doc """
@@ -18,6 +19,15 @@ defmodule ExModel.Declaration do
   def add_field(declaration, field_name) do
     field_names = MapSet.put(declaration.field_names, field_name)
     Map.put(declaration, :field_names, field_names)
+  end
+
+  @doc """
+  """
+  def add_field(declaration, field_name, options) do
+    default        = Keyword.get(options, :default)
+    field_names    = MapSet.put(declaration.field_names, field_name)
+    default_values = Map.put(declaration.default_values, field_name, default)
+    %{declaration | field_names: field_names, default_values: default_values}
   end
 
   @doc """
