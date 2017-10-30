@@ -27,7 +27,7 @@ defmodule ExModel do
   end
 
   defmacro __before_compile__(_env) do
-  	quote do
+        quote do
       defstruct(
         attributes: %{},
         old_attributes: %{},
@@ -51,9 +51,13 @@ defmodule ExModel do
 
       def changed?(object), do: Implementation.changed?(object)
 
+      def changed?(object, fields), do: Implementation.changed?(object, fields)
+
       def changeset(object), do: Implementation.changeset(object)
 
+      def changeset(object, fields), do: Implementation.changeset(object, fields)
+
       def clear_changes(object), do: Implementation.clear_changes(object)
-  	end
+    end
   end
 end

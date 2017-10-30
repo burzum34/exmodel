@@ -60,11 +60,23 @@ defmodule ExModel.Implementation do
   def changed?(object), do: !(object |> changeset |> Enum.empty?)
 
   @doc """
+  Returns true if the given object has any unsaved changes in attributes specified
+  by fields.
+  """
+  def changed?(object, fields), do: !(object |> changeset(fields) |> Enum.empty?)
+
+  @doc """
   Returns the given object's unsaved changes as a map.
   """
   def changeset(object), do: object.attributes
     |> Enum.filter(fn {k, v} -> old = object.old_attributes[k]; v != old end)
     |> Enum.into(Map.new)
+
+  @doc """
+  Returns a map with the unsaved changes in object specified by fields.
+  """
+  def changeset(object, fields), do: changeset(object)
+    |> Enum.filter(fn({k, v}) -> Enum.member?(fields, k) end)
 
   @doc """
   Given an object, this function returns a new object where all attributes are
