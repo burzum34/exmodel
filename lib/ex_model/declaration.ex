@@ -1,11 +1,11 @@
 defmodule ExModel.Declaration do
   @moduledoc """
   """
+  alias ExModel.FieldDeclaration
 
   defstruct(
     module: nil,
-    field_names: MapSet.new,
-    default_values: Map.new
+    fields: %{}
   )
 
   @doc """
@@ -16,18 +16,15 @@ defmodule ExModel.Declaration do
   """
   def add_field(declaration, field_name) when is_list(field_name), do:
     Enum.reduce(field_name, declaration, &(add_field &2, &1))
-  def add_field(declaration, field_name) do
-    field_names = MapSet.put(declaration.field_names, field_name)
-    Map.put(declaration, :field_names, field_names)
-  end
+  def add_field(declaration, field_name), do:
+    add_field(declaration, field_name, [])
 
   @doc """
   """
   def add_field(declaration, field_name, options) do
-    default        = Keyword.get(options, :default)
-    field_names    = MapSet.put(declaration.field_names, field_name)
-    default_values = Map.put(declaration.default_values, field_name, default)
-    %{declaration | field_names: field_names, default_values: default_values}
+    field_declaration = FieldDeclaration.new(field_name, options)
+    fields = Map.put(declaration.fields, field_name, field_declaration)
+    %{declaration | fields: fields}
   end
 
   @doc """
@@ -44,5 +41,5 @@ defmodule ExModel.Declaration do
   defp assert_declared(_declaration, _field_name, true), do: true
 
   defp declared?(declaration, field_name), do:
-    MapSet.member?(declaration.field_names, field_name)
+    Map.has_key?(declaration.fields, field_name)
 end

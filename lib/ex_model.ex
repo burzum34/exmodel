@@ -46,9 +46,6 @@ defmodule ExModel do
 
       def get(object, key), do: Implementation.get(object, key, @declaration)
 
-      def get(object, key, default), do:
-        Implementation.get(object, key, default, @declaration)
-
       def changed?(object), do: Implementation.changed?(object)
 
       def changed?(object, fields), do: Implementation.changed?(object, fields)

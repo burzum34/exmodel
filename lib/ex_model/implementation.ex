@@ -9,19 +9,19 @@ defmodule ExModel.Implementation do
   @doc """
   Given a declaration, this function returns an empty model object.
   """
-  def new(declaration), do: new([], declaration)
+  def new(declaration) do
+    object = struct(declaration.module, [])
+    Enum.reduce(declaration.fields, object, fn({fname, fdecl}, acc) ->
+      assign_attribute(acc, {fname, fdecl.default}, declaration)
+    end)
+  end
 
   @doc """
   Given a keyword list or a map, and a declaration, this function returns a
   model object with it's attributes assigned according to the given ones.
   """
-  def new(attributes, declaration) do
-    acc = struct(declaration.module, [])
-    attributes = Enum.into(attributes, %{})
-    declaration.default_values
-      |> Map.merge(attributes)
-      |> Enum.reduce(acc, &(assign_attribute &2, &1, declaration))
-  end
+  def new(attrs, decl), do:
+    Enum.reduce(attrs, new(decl), &(assign_attribute &2, &1, decl))
 
   @doc """
   Given a model object, a key, a value, and a declaration, this function returns
@@ -41,17 +41,9 @@ defmodule ExModel.Implementation do
   Given a model object, a key, and a declaration, this function returns the
   model object's corresponding attribute value, or nil if not found.
   """
-  def get(object, key, declaration), do:
-    get(object, key, nil, declaration)
-
-  @doc """
-  Given a model object, a key, a default value, and a declaration, this function
-  returns the model object's corresponding attribute value, or the given default
-  value if not found.
-  """
-  def get(object, key, default, declaration) do
+  def get(object, key, declaration) do
     assert_declared(key, declaration)
-    Map.get(object.attributes, key, default)
+    Map.get(object.attributes, key)
   end
 
   @doc """
@@ -76,7 +68,7 @@ defmodule ExModel.Implementation do
   Returns a map with the unsaved changes in object specified by fields.
   """
   def changeset(object, fields), do: changeset(object)
-    |> Enum.filter(fn({k, v}) -> Enum.member?(fields, k) end)
+    |> Enum.filter(fn({k, _v}) -> Enum.member?(fields, k) end)
 
   @doc """
   Given an object, this function returns a new object where all attributes are
