@@ -83,8 +83,16 @@ defmodule ExModel.Implementation do
 
   defp assign_attribute(object, {key, value}, declaration) do
     assert_declared(key, declaration)
+    transient = declaration.fields[key].transient
+    assign_attribute(object, key, value, transient)
+  end
+
+  defp assign_attribute(object, key, value, false), do:
+    %{object | attributes: Map.put(object.attributes, key, value)}
+  defp assign_attribute(object, key, value, true) do
     attributes = Map.put(object.attributes, key, value)
-    Map.put(object, :attributes, attributes)
+    old_attributes = Map.put(object.old_attributes, key, value)
+    %{object | attributes: attributes, old_attributes: old_attributes}
   end
 
   def assert_declared(key, declaration), do:
