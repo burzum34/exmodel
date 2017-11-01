@@ -27,7 +27,7 @@ defmodule ExModel do
   end
 
   defmacro __before_compile__(_env) do
-        quote do
+    quote do
       defstruct(
         attributes: %{},
         old_attributes: %{},
@@ -45,6 +45,20 @@ defmodule ExModel do
         Implementation.put_all(object, enumerable, @declaration)
 
       def get(object, key), do: Implementation.get(object, key, @declaration)
+
+      def get_all(object), do: Implementation.get_all(object, @declaration)
+
+      def get_all(object, keys), do:
+        Implementation.get_all(object, keys, @declaration)
+
+      def get_old(object, key), do:
+        Implementation.get_old(object, key, @declaration)
+
+      def get_all_old(object), do:
+        Implementation.get_all_old(object, @declaration)
+
+      def get_all_old(object, keys), do:
+        Implementation.get_all_old(object, keys, @declaration)
 
       def changed?(object), do: Implementation.changed?(object)
 

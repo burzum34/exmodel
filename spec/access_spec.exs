@@ -113,4 +113,76 @@ defmodule ExModel.AccessSpec do
       end
     end
   end
+
+  describe "get_all/1" do
+    subject do: Subject.new()
+      |> Subject.put_all(foo: "foo")
+      |> Subject.get_all()
+
+    it "returns all values as a map" do
+      expect(subject).to eq %{foo: "foo", bar: nil}
+    end
+  end
+
+  describe "get_all/2" do
+    subject do: Subject.new()
+      |> Subject.put_all(foo: "foo", bar: "bar")
+      |> Subject.get_all([:foo])
+
+    it "returns the values for the given keys as a map" do
+      expect(subject).to eq %{foo: "foo"}
+    end
+  end
+
+  describe "get_old/1" do
+    subject do: Subject.new()
+      |> Subject.put_all(foo: "foo", bar: "bar")
+      |> Subject.clear_changes
+      |> Subject.put(:foo, "frozz")
+      |> Subject.put(:foo, "baz")
+      |> Subject.get_old(attribute)
+
+    context "when the given attribute has not been declared" do
+      let :attribute, do: :frozz
+
+      it "raises an exception" do
+        expect(fn -> subject() |> IO.inspect end).to(
+          raise_exception(RuntimeError))
+      end
+    end
+
+    context "when the given attribute has been declared" do
+      let :attribute, do: :foo
+
+      it "returns the value after the most recent call to clear_changes/1" do
+        expect(subject).to eq "foo"
+      end
+    end
+  end
+
+  describe "get_all_old/1" do
+    subject do: Subject.new()
+      |> Subject.put_all(foo: "foo", bar: "bar")
+      |> Subject.clear_changes
+      |> Subject.put(:foo, "frozz")
+      |> Subject.put(:bar, "baz")
+      |> Subject.get_all_old()
+
+    it "returns the all values after most recent call to clear_changes/1" do
+      expect(subject).to eq %{foo: "foo", bar: "bar"}
+    end
+  end
+
+  describe "get_all_old/2" do
+    subject do: Subject.new()
+      |> Subject.put_all(foo: "foo", bar: "bar")
+      |> Subject.clear_changes
+      |> Subject.put(:foo, "frozz")
+      |> Subject.put(:bar, "baz")
+      |> Subject.get_all_old([:foo])
+
+    it "returns the values after most recent call to clear_changes/1" do
+      expect(subject).to eq %{foo: "foo"}
+    end
+  end
 end

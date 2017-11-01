@@ -47,6 +47,47 @@ defmodule ExModel.Implementation do
   end
 
   @doc """
+  Given a model object and a declaration, this function returns a Map
+  representation of the model object.
+  """
+  def get_all(object, declaration), do:
+    get_all(object, Map.keys(declaration.fields), declaration)
+
+  @doc """
+  Given a model object, a list of keys as atoms, and a declaration, this
+  function returns the corresponding values as a Map.
+  """
+  def get_all(object, keys, declaration), do: keys
+    |> Enum.map(&({&1, get(object, &1, declaration)}))
+    |> Enum.into(Map.new)
+
+  @doc """
+  Given a model object, a key, and a declaration, this function returns the
+  corresponding value at the time directly after the most recent clearing of
+  changes.
+  """
+  def get_old(object, key, declaration) do
+    assert_declared(key, declaration)
+    Map.get(object.old_attributes, key)
+  end
+
+  @doc """
+  Given a model object and a declaration, this function returns all values at
+  the time directly after the most recent clearing of changes, as a Map.
+  """
+  def get_all_old(object, declaration), do:
+    get_all_old(object, Map.keys(declaration.fields), declaration)
+
+  @doc """
+  Given a model object, a list of keys, and a declaration, this function returns
+  the corresponding values at the time directly after the most recent clearing
+  of changes, as a Map.
+  """
+  def get_all_old(object, keys, declaration), do: keys
+    |> Enum.map(&({&1, get_old(object, &1, declaration)}))
+    |> Enum.into(Map.new)
+
+  @doc """
   Returns true if the given object has any unsaved changes.
   """
   def changed?(object), do: !(object |> changeset |> Enum.empty?)
