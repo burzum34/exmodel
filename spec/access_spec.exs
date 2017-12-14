@@ -9,10 +9,10 @@ defmodule ExModel.AccessSpec do
   end
 
   describe "new/0" do
-    subject do: Subject.new
+    subject do: Subject.new()
 
     it "returns an empty object" do
-      expect(subject().attributes).to eq %{foo: nil, bar: nil}
+      expect(Subject.get_all(subject())).to eq %{foo: nil, bar: nil}
     end
   end
 
@@ -23,7 +23,7 @@ defmodule ExModel.AccessSpec do
       let :given_attributes, do: [foo: "foo", bar: "bar"]
       
       it "assigns the attributes" do
-        expect(subject().attributes[:foo]).to eq "foo"
+        expect(Subject.get(subject(), :foo)).to eq "foo"
       end
     end
 

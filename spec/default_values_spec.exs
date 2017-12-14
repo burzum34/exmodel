@@ -16,6 +16,10 @@ defmodule ExModel.DefaultValuesSpec do
     it "sets the default value" do
       expect(Subject.get subject(), :foo).to eq "foo"
     end
+
+    it "considers the attribute as changed" do
+      expect(Subject.changeset subject()).to eq %{foo: "foo", bar: nil}
+    end
   end
 
   describe "new/1" do

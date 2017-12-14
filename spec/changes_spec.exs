@@ -15,13 +15,15 @@ defmodule ExModel.ChangesSpec do
     context "when an empty object has been created" do
       subject do: Subject.new()
 
-      it "returns false" do
-        expect(Subject.changed? subject()).to be false
+      it "returns true" do
+        expect(Subject.changed? subject()).to be true
       end
     end
 
     context "when an attribute has been set" do
-      subject do: Subject.new(foo: "foo")
+      subject do: Subject.new
+        |> Subject.clear_changes
+        |> Subject.put(:foo, "foo")
 
       it "returns true" do
         expect(Subject.changed? subject()).to be true
@@ -29,7 +31,9 @@ defmodule ExModel.ChangesSpec do
     end
 
     context "when a transient attribute has been set" do
-      subject do: Subject.new(baz: "baz")
+      subject do: Subject.new
+        |> Subject.clear_changes
+        |> Subject.put(:baz, "baz")
 
       it "returns false" do
         expect(Subject.changed? subject()).to be false
@@ -41,13 +45,16 @@ defmodule ExModel.ChangesSpec do
     context "when an empty object has been created" do
       subject do: Subject.changeset(Subject.new())
 
-      it "returns an empty changeset" do
-        expect(subject()).to eq %{}
+      it "returns an full changeset" do
+        expect(subject()).to eq %{foo: nil, bar: nil}
       end
     end
 
     context "when an attribute has been set" do
-      subject do: Subject.changeset(Subject.new(foo: "foo"))
+      subject do: Subject.new
+        |> Subject.clear_changes
+        |> Subject.put(:foo, "foo")
+        |> Subject.changeset
 
       it "includes the attribute" do
         expect(subject()).to eq %{foo: "foo"}
@@ -55,7 +62,22 @@ defmodule ExModel.ChangesSpec do
     end
 
     context "when a transient attribute has been set" do
-      subject do: Subject.changeset(Subject.new(baz: "baz"))
+      subject do: Subject.new
+        |> Subject.clear_changes
+        |> Subject.put(:baz, "baz")
+        |> Subject.changeset
+
+      it "does not include the attribute" do
+        expect(subject()).to eq %{}
+      end
+    end
+
+    context "when an attribute is updated to the previous value" do
+      subject do: Subject.new()
+        |> Subject.put(:foo, "foo")
+        |> Subject.clear_changes
+        |> Subject.put(:foo, "foo")
+        |> Subject.changeset
 
       it "does not include the attribute" do
         expect(subject()).to eq %{}

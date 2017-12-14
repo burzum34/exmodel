@@ -9,19 +9,16 @@ defmodule ExModel.Implementation do
   @doc """
   Given a declaration, this function returns an empty model object.
   """
-  def new(declaration) do
-    object = struct(declaration.module, [])
-    Enum.reduce(declaration.fields, object, fn({fname, fdecl}, acc) ->
-      assign_attribute(acc, {fname, fdecl.default}, declaration)
-    end)
-  end
+  def new(declaration), do: new([], declaration)
 
   @doc """
   Given a keyword list or a map, and a declaration, this function returns a
   model object with it's attributes assigned according to the given ones.
   """
-  def new(attrs, decl), do:
-    Enum.reduce(attrs, new(decl), &(assign_attribute &2, &1, decl))
+  def new(attributes, declaration), do: declaration
+    |> initialize_struct
+    |> set_default_attributes(declaration)
+    |> assign_attributes(attributes, declaration)
 
   @doc """
   Given a model object, a key, a value, and a declaration, this function returns
@@ -43,7 +40,9 @@ defmodule ExModel.Implementation do
   """
   def get(object, key, declaration) do
     assert_declared(key, declaration)
-    Map.get(object.attributes, key)
+    object.attributes
+      |> Map.merge(object.changes)
+      |> Map.get(key)
   end
 
   @doc """
@@ -68,7 +67,7 @@ defmodule ExModel.Implementation do
   """
   def get_old(object, key, declaration) do
     assert_declared(key, declaration)
-    Map.get(object.old_attributes, key)
+    Map.get(object.attributes, key)
   end
 
   @doc """
@@ -85,12 +84,12 @@ defmodule ExModel.Implementation do
   """
   def get_all_old(object, keys, declaration), do: keys
     |> Enum.map(&({&1, get_old(object, &1, declaration)}))
-    |> Enum.into(Map.new)
+    |> Enum.into(Map.new())
 
   @doc """
   Returns true if the given object has any unsaved changes.
   """
-  def changed?(object), do: !(object |> changeset |> Enum.empty?)
+  def changed?(object), do: !(Enum.empty?(object.changes))
 
   @doc """
   Returns true if the given object has any unsaved changes in attributes specified
@@ -101,9 +100,7 @@ defmodule ExModel.Implementation do
   @doc """
   Returns the given object's unsaved changes as a map.
   """
-  def changeset(object), do: object.attributes
-    |> Enum.filter(fn {k, v} -> old = object.old_attributes[k]; v != old end)
-    |> Enum.into(Map.new)
+  def changeset(object), do: object.changes
 
   @doc """
   Returns a map with the unsaved changes in object specified by fields.
@@ -115,12 +112,27 @@ defmodule ExModel.Implementation do
   Given an object, this function returns a new object where all attributes are
   considered unchanged.
   """
-  def clear_changes(object), do:
-    Map.put(object, :old_attributes, object.attributes)
+  def clear_changes(object) do
+    attributes = Map.merge(object.attributes, object.changes)
+    %{object | attributes: attributes, changes: Map.new()}
+  end
 
   #
   # Private
   #
+
+  defp initialize_struct(declaration), do:
+    struct(declaration.module, attributes: %{}, changes: %{})
+
+  defp set_default_attributes(object, declaration), do: declaration.fields
+    |> Map.values
+    |> Enum.reduce(object, &set_default_attribute(&2, &1, declaration))
+
+  defp set_default_attribute(object, field, declaration), do:
+    assign_attribute(object, {field.name, field.default}, declaration)
+
+  defp assign_attributes(object, attributes, declaration), do:
+    Enum.reduce(attributes, object, &assign_attribute(&2, &1, declaration))
 
   defp assign_attribute(object, {key, value}, declaration) do
     assert_declared(key, declaration)
@@ -129,11 +141,29 @@ defmodule ExModel.Implementation do
   end
 
   defp assign_attribute(object, key, value, false), do:
-    %{object | attributes: Map.put(object.attributes, key, value)}
-  defp assign_attribute(object, key, value, true) do
+    assign_regular_attribute(object, key, value)
+  defp assign_attribute(object, key, value, true), do:
+    assign_transient_attribute(object, key, value)
+
+  defp assign_regular_attribute(object, key, value) do
+    case Map.has_key?(object.attributes, key) do
+      false -> # This is a new object that has never had changes cleared.
+        changes = Map.put(object.changes, key, value)
+        Map.put(object, :changes, changes)
+      true -> case object.attributes[key] == value do
+        true -> # Changed back to the original value
+          changes = Map.delete(object.changes, key)
+          Map.put(object, :changes, changes)
+        false ->
+          changes = Map.put(object.changes, key, value)
+          Map.put(object, :changes, changes)
+      end
+    end
+  end
+
+  defp assign_transient_attribute(object, key, value) do
     attributes = Map.put(object.attributes, key, value)
-    old_attributes = Map.put(object.old_attributes, key, value)
-    %{object | attributes: attributes, old_attributes: old_attributes}
+    %{object | attributes: attributes}
   end
 
   def assert_declared(key, declaration), do:

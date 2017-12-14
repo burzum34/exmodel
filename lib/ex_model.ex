@@ -30,8 +30,7 @@ defmodule ExModel do
     quote do
       defstruct(
         attributes: %{},
-        old_attributes: %{},
-        errors: %{}
+        changes: %{}
       )
 
       def new, do: Implementation.new(@declaration)
