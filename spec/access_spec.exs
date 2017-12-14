@@ -120,7 +120,7 @@ defmodule ExModel.AccessSpec do
       |> Subject.get_all()
 
     it "returns all values as a map" do
-      expect(subject).to eq %{foo: "foo", bar: nil}
+      expect(subject()).to eq %{foo: "foo", bar: nil}
     end
   end
 
@@ -130,7 +130,7 @@ defmodule ExModel.AccessSpec do
       |> Subject.get_all([:foo])
 
     it "returns the values for the given keys as a map" do
-      expect(subject).to eq %{foo: "foo"}
+      expect(subject()).to eq %{foo: "foo"}
     end
   end
 
@@ -140,7 +140,7 @@ defmodule ExModel.AccessSpec do
       |> Subject.clear_changes
       |> Subject.put(:foo, "frozz")
       |> Subject.put(:foo, "baz")
-      |> Subject.get_old(attribute)
+      |> Subject.get_old(attribute())
 
     context "when the given attribute has not been declared" do
       let :attribute, do: :frozz
@@ -155,7 +155,7 @@ defmodule ExModel.AccessSpec do
       let :attribute, do: :foo
 
       it "returns the value after the most recent call to clear_changes/1" do
-        expect(subject).to eq "foo"
+        expect(subject()).to eq "foo"
       end
     end
   end
@@ -169,7 +169,7 @@ defmodule ExModel.AccessSpec do
       |> Subject.get_all_old()
 
     it "returns the all values after most recent call to clear_changes/1" do
-      expect(subject).to eq %{foo: "foo", bar: "bar"}
+      expect(subject()).to eq %{foo: "foo", bar: "bar"}
     end
   end
 
@@ -182,7 +182,7 @@ defmodule ExModel.AccessSpec do
       |> Subject.get_all_old([:foo])
 
     it "returns the values after most recent call to clear_changes/1" do
-      expect(subject).to eq %{foo: "foo"}
+      expect(subject()).to eq %{foo: "foo"}
     end
   end
 end

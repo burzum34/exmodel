@@ -1,2 +1,2 @@
-%{"espec": {:git, "https://github.com/antonmi/espec", "a1fb980e9d4bf2aecdb6e7f175715a042db436c2", []},
-  "meck": {:hex, :meck, "0.8.4", "59ca1cd971372aa223138efcf9b29475bde299e1953046a0c727184790ab1520", [:make, :rebar], []}}
+%{"espec": {:git, "https://github.com/antonmi/espec", "09bd32a2365039ebd849d11a5a538e4673eabcac", []},
+  "meck": {:hex, :meck, "0.8.9", "64c5c0bd8bcca3a180b44196265c8ed7594e16bcc845d0698ec6b4e577f48188", [:rebar3], [], "hexpm"}}

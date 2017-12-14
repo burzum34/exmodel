@@ -4,7 +4,7 @@ defmodule Exmodel.Mixfile do
   def project do
     [app: :exmodel,
      version: "0.1.0",
-     elixir: "~> 1.4",
+     elixir: "~> 1.5",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      preferred_cli_env: [espec: :test],
@@ -31,7 +31,7 @@ defmodule Exmodel.Mixfile do
   defp deps do
     [
       {:espec,
-        "1.3.2",
+        "1.5.0",
         git: "https://github.com/antonmi/espec",
         only: :test}
     ]
