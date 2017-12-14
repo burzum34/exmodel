@@ -185,4 +185,13 @@ defmodule ExModel.AccessSpec do
       expect(subject()).to eq %{foo: "foo"}
     end
   end
+
+  describe "keys/0" do
+    subject do: Enum.sort(Subject.keys())
+    let :expected, do: Enum.sort([:foo, :bar])
+
+    it "returns the keys for all declared attributes" do
+      expect(subject()).to eq expected()
+    end
+  end
 end

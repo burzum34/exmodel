@@ -59,6 +59,8 @@ defmodule ExModel do
       def get_all_old(object, keys), do:
         Implementation.get_all_old(object, keys, @declaration)
 
+      def keys(), do: Implementation.keys(@declaration)
+
       def changed?(object), do: Implementation.changed?(object)
 
       def changed?(object, fields), do: Implementation.changed?(object, fields)

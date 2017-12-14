@@ -87,6 +87,11 @@ defmodule ExModel.Implementation do
     |> Enum.into(Map.new())
 
   @doc """
+  Returns the names of all declared attributes as a list of atoms.
+  """
+  def keys(declaration), do: Map.keys(declaration.fields)
+
+  @doc """
   Returns true if the given object has any unsaved changes.
   """
   def changed?(object), do: !(Enum.empty?(object.changes))
