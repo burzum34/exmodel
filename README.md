@@ -128,3 +128,19 @@ object = MyModel.new()
 MyModel.get_all(object)
 # => %{foo: "foo", bar: nil}
 ```
+### Transient attributes
+
+An attribute can be declared to be *transient*. That means that changes to the attribute will not be considered by the change tracking mechanism:
+
+```elixir
+defmodule MyModel do
+  use ExModel
+
+  attribute :foo
+  attribute :bar, transient: true
+end
+
+object = MyModel.new(foo: "foo", bar: "bar")
+MyModel.changeset(object)
+# => %{foo: "foo"}
+```
