@@ -8,7 +8,9 @@ defmodule Exmodel.Mixfile do
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      preferred_cli_env: [espec: :test],
-     deps: deps()]
+     deps: deps(),
+     aliases: aliases()
+   ]
   end
 
   # Configuration for the OTP application
@@ -17,6 +19,12 @@ defmodule Exmodel.Mixfile do
   def application do
     # Specify extra applications you'll use from Erlang/Elixir
     [extra_applications: [:logger]]
+  end
+
+  defp aliases do
+    [
+      test: "espec"
+    ]
   end
 
   # Dependencies can be Hex packages:
