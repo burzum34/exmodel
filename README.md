@@ -12,7 +12,7 @@ Add `exmodel` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:exmodel, git: "https://github.com/burzum34/exmodel.git"}]
+  [{:exmodel, "0.1.0", git: "https://github.com/burzum34/exmodel.git"}]
 end
 ```
 
