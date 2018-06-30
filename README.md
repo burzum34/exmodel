@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/burzum34/exmodel.svg?branch=master)](https://travis-ci.org/burzum34/exmodel)
+
 # ExModel
 
 ExModel is a small Elixir library loosely inspired by ActiveModel in Ruby.
